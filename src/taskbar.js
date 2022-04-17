@@ -1,4 +1,4 @@
-import { GObject, Clutter, Shell, St } from '#gi'
+import { GObject, Graphene, Clutter, Shell, St } from '#gi'
 import { appDisplay as AppDisplay } from '#ui'
 import { appFavorites as AppFavorites } from '#ui'
 import { dnd as DND } from '#ui'
@@ -33,11 +33,12 @@ class TaskBarItem extends St.Bin {
     GObject.registerClass(this)
   }
 
-  constructor() {
+  constructor(params) {
     super({
       style_class: 'dash-item-container',
       x_align: Clutter.ActorAlign.START,
-      y_align: Clutter.ActorAlign.START
+      y_align: Clutter.ActorAlign.START,
+      ...params
     })
   }
 }
@@ -76,7 +77,12 @@ class AppButton extends TaskBarItem {
   }
 
   constructor(app) {
-    super()
+    super({
+      pivot_point: new Graphene.Point({ x: .5, y: .5 }),
+      scale_x: 0,
+      scale_y: 0,
+      opacity: 0
+    })
 
     this.button = new AppIcon(app)
     this.set_child(this.button)
@@ -108,6 +114,27 @@ class AppButton extends TaskBarItem {
     } else {
       this.button.remove_style_pseudo_class('checked')
     }
+  }
+
+  show() {
+    this.ease({
+      scale_x: 1,
+      scale_y: 1,
+      opacity: 255,
+      duration: 200,
+      mode: Clutter.AnimationMode.EASE_OUT_QUAD
+    })
+  }
+
+  animateDestroy() {
+    this.ease({
+      scale_x: 0,
+      scale_y: 0,
+      opacity: 0,
+      duration: 200,
+      mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+      onComplete: () => this.destroy()
+    })
   }
 
   cycleWindows(direction) {
@@ -239,6 +266,7 @@ class AppsContainer extends St.ScrollView {
     actor.setIconSize(iconSize)
 
     this.mainBox.add_child(actor)
+    actor.show()
   }
 }
 
@@ -404,7 +432,7 @@ export class TaskBar extends St.BoxLayout {
 
     oldIds.forEach((id, index) => {
       if (!newIds.includes(id)) {
-        oldApps[index].destroy()
+        oldApps[index].animateDestroy()
       }
     })
 
