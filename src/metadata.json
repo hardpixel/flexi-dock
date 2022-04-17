@@ -1,0 +1,10 @@
+{
+  "shell-version": ["42"],
+  "uuid": "flexi-dock@hardpixel.eu",
+  "url": "https://github.com/hardpixel/flexi-dock",
+  "settings-schema": "org.gnome.shell.extensions.flexi-dock",
+  "gettext-domain": "flexi-dock",
+  "version": 1,
+  "name": "Flexi Dock",
+  "description": "Flexible dock implementation"
+}

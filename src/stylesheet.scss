@@ -1,0 +1,109 @@
+.flexi-taskbar {
+  spacing: 5px;
+
+  StScrollView {
+    -st-hfade-offset: 68px;
+  }
+
+  &.vertical {
+    StScrollView {
+      -st-vfade-offset: 68px;
+    }
+  }
+
+  .flex-taskbar-list {
+    spacing: 5px;
+  }
+
+  .show-apps, .app-well-app {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .app-well-app-running-dot {
+    margin-bottom: 0 !important;
+  }
+}
+
+.flexi-dock {
+  background-color: rgba(black, 0.7);
+  padding: 8px;
+  spacing: 8px;
+
+  .overview-icon {
+    border-radius: 0.5em !important;
+  }
+}
+
+.flexi-panel-enabled {
+  #overview {
+    .search-entry {
+      margin-top: 35px !important;
+    }
+
+    .page-indicators {
+      margin-bottom: 35px !important;
+    }
+  }
+}
+
+.flexi-panel-container {
+  background: black !important;
+
+  #panelLeft, #panelCenter, #panelRight {
+    spacing: 0px;
+  }
+
+  .panel-button {
+    -natural-hpadding: 6px;
+    -minimum-hpadding: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .panel-button {
+    > .system-status-icon {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+
+    .panel-status-indicators-box {
+      spacing: 4px;
+    }
+  }
+
+  .system-tray-icons {
+    -natural-hpadding: 10px;
+    -minimum-hpadding: 8px;
+
+    .panel-status-indicators-box {
+      spacing: 10px;
+    }
+  }
+
+  .clock-display {
+    &.panel-button {
+      -natural-hpadding: 0px;
+      -minimum-hpadding: 0px;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+  }
+
+  .clock-display-box {
+    .clock {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    StIcon:last-child {
+      margin-right: 3px;
+    }
+  }
+}
+
+.flexi-panel {
+  .overview-icon {
+    border-radius: 0 !important;
+  }
+}

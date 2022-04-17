@@ -1,0 +1,14 @@
+# Flexi Dock (WIP)
+Gnome Shell extension to provide a flexible applications dock.
+
+### Installation
+The easiest way to install this extension is via the official [Gnome Shell Extensions](https://extensions.gnome.org) resource page [here](https://extensions.gnome.org/extension/4488/flexi-dock).
+
+### Packages
+Arch Linux: [AUR package](https://aur.archlinux.org/packages/gnome-shell-extension-flexi-dock)
+
+## Contributing
+Bug reports and pull requests are welcome on GitHub at https://github.com/hardpixel/flexi-dock.
+
+## License
+Flexi Dock is available as open source under the terms of the [GPLv3](http://www.gnu.org/licenses/gpl-3.0.en.html)

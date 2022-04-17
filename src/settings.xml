@@ -1,0 +1,73 @@
+<schemalist gettext-domain="gnome-shell-extensions">
+  <enum id="{schemaName}.mode">
+    <value value="0" nick="dock" />
+    <value value="1" nick="panel" />
+  </enum>
+
+  <enum id="{schemaName}.dockPosition">
+    <value value="0" nick="left" />
+    <value value="1" nick="right" />
+    <value value="2" nick="top" />
+    <value value="3" nick="bottom" />
+  </enum>
+
+  <enum id="{schemaName}.dockAlignment">
+    <value value="0" nick="fill" />
+    <value value="1" nick="start" />
+    <value value="2" nick="end" />
+    <value value="3" nick="center" />
+  </enum>
+
+  <enum id="{schemaName}.panelPosition">
+    <value value="0" nick="top" />
+    <value value="1" nick="bottom" />
+  </enum>
+
+  <enum id="{schemaName}.showAppsPosition">
+    <value value="0" nick="start" />
+    <value value="1" nick="end" />
+  </enum>
+
+  <enum id="{schemaName}.iconAlignment">
+    <value value="0" nick="start" />
+    <value value="1" nick="end" />
+    <value value="2" nick="center" />
+  </enum>
+
+  <schema id="{schemaName}" path="{schemaPath}">
+    <key name="mode" enum="{schemaName}.mode">
+      <default>"dock"</default>
+      <summary>The extension has initialized.</summary>
+    </key>
+
+    <key name="dock-position" enum="{schemaName}.dockPosition">
+      <default>"bottom"</default>
+      <summary>Set dock mode position.</summary>
+    </key>
+
+    <key name="dock-alignment" enum="{schemaName}.dockAlignment">
+      <default>"center"</default>
+      <summary>Set dock mode alignment.</summary>
+    </key>
+
+    <key name="panel-position" enum="{schemaName}.panelPosition">
+      <default>"bottom"</default>
+      <summary>Set panel mode position.</summary>
+    </key>
+
+    <key name="show-apps-position" enum="{schemaName}.showAppsPosition">
+      <default>"start"</default>
+      <summary>Set show apps button position.</summary>
+    </key>
+
+    <key name="icon-alignment" enum="{schemaName}.iconAlignment">
+      <default>"start"</default>
+      <summary>Set taskbar icons alignment.</summary>
+    </key>
+
+    <key name="icon-size" type="i">
+      <default>32</default>
+      <summary>Set taskbar icons size.</summary>
+    </key>
+  </schema>
+</schemalist>
