@@ -12,7 +12,8 @@
   },
   "devDependencies": {
     "rollup": "latest",
-    "rollup-plugin-gsext": "^0.2.0",
-    "rollup-plugin-sass": "^1.2.12"
+    "rollup-plugin-delete": "latest",
+    "rollup-plugin-gsext": "latest",
+    "rollup-plugin-sass": "latest"
   }
 }
