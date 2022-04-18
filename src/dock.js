@@ -95,15 +95,15 @@ export class Dock extends St.Bin {
 
     this.set_size(width, height)
 
-    const x = position == 'right'
+    const posX = position == 'right'
       ? this.monitor.width - this.width
       : 0
 
-    const y = position == 'bottom'
+    const posY = position == 'bottom'
       ? this.monitor.height - this.height
       : Main.panel.height
 
-    this.set_position(x, y)
+    this.set_position(posX, posY)
 
     if (this.posClassName) {
       this.dockbar.remove_style_class_name(this.posClassName)
