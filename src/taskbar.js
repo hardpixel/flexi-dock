@@ -53,10 +53,12 @@ class AppIcon extends AppDisplay.AppIcon {
       setSizeManually: true,
       showLabel: false
     })
+
+    this.side = St.Side.BOTTOM
   }
 
   popupMenu() {
-    super.popupMenu(St.Side.BOTTOM)
+    super.popupMenu(this.side)
   }
 
   handleDragOver() {
@@ -69,6 +71,27 @@ class AppIcon extends AppDisplay.AppIcon {
 
   scaleAndFade() {}
   undoScaleAndFade() {}
+
+  setSide(side) {
+    this.side = St.Side[side.toUpperCase()]
+    this.updateIndicator(side)
+  }
+
+  updateIndicator(side) {
+    const start  = Clutter.ActorAlign.START
+    const center = Clutter.ActorAlign.CENTER
+    const end    = Clutter.ActorAlign.END
+
+    if (['left', 'right'].includes(side)) {
+      this._dot.x_align = side == 'left' ? start : end
+      this._dot.y_align = center
+    }
+
+    else {
+      this._dot.x_align = center
+      this._dot.y_align = side == 'top' ? start : end
+    }
+  }
 }
 
 class AppButton extends TaskBarItem {
@@ -102,6 +125,10 @@ class AppButton extends TaskBarItem {
 
   get windows() {
     return this.app.get_windows()
+  }
+
+  setSide(side) {
+    this.button.setSide(side)
   }
 
   setIconSize(size) {
@@ -261,9 +288,11 @@ class AppsContainer extends St.ScrollView {
     )
   }
 
-  createApp(app, index, iconSize) {
+  createApp(app, index, { size, side }) {
     const actor = new AppButton(app)
-    actor.setIconSize(iconSize)
+
+    actor.setIconSize(size)
+    actor.setSide(side)
 
     this.mainBox.add_child(actor)
     actor.show()
@@ -319,6 +348,14 @@ export class TaskBar extends St.BoxLayout {
       'icon-size', this._onIconSize.bind(this)
     )
 
+    this.setting.connect(
+      'dock-position', this._onPosition.bind(this)
+    )
+
+    this.setting.connect(
+      'panel-position', this._onPosition.bind(this)
+    )
+
     this.showApps = new ShowAppsButton()
     this.add_child(this.showApps)
 
@@ -358,6 +395,14 @@ export class TaskBar extends St.BoxLayout {
     return this.setting.get('icon-alignment')
   }
 
+  get dockMode() {
+    return this.setting.get('mode')
+  }
+
+  get dockSide() {
+    return this.setting.get(`${this.dockMode}-position`)
+  }
+
   _onDestroy() {
     this.setting.disconnectAll()
     this.signals.disconnectAll()
@@ -385,6 +430,10 @@ export class TaskBar extends St.BoxLayout {
   _onIconSize() {
     this.showApps.setIconSize(this.iconSize)
     this.appItems.forEach(item => item.setIconSize(this.iconSize))
+  }
+
+  _onPosition() {
+    this.appItems.forEach(item => item.setSide(this.dockSide))
   }
 
   _onVertical() {
@@ -438,7 +487,10 @@ export class TaskBar extends St.BoxLayout {
 
     newIds.forEach((id, index) => {
       if (!oldIds.includes(id)) {
-        this.appsList.createApp(newApps[index], index, this.iconSize)
+        this.appsList.createApp(newApps[index], index, {
+          size: this.iconSize,
+          side: this.dockSide
+        })
       }
     })
   }
