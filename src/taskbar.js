@@ -164,17 +164,26 @@ class AppButton extends TaskBarItem {
     })
   }
 
+  activateLastWindow() {
+    const windows = this.windows.sort((a, b) => {
+      return a.get_user_time() < b.get_user_time()
+    })
+
+    Main.activateWindow(windows[0])
+  }
+
   cycleWindows(direction) {
     const windows = this.windows.sort((a, b) => {
-      return a.get_user_time() > b.get_user_time()
+      return a.get_stable_sequence() > b.get_stable_sequence()
     })
 
     let currIndex = windows.indexOf(global.display.focus_window)
-    let nextIndex = 0
 
     if (currIndex < 0) {
-      nextIndex = currIndex + (direction == 'up' ? -1 : 1)
+      return this.activateLastWindow()
     }
+
+    let nextIndex = currIndex + (direction == 'up' ? -1 : 1)
 
     if (nextIndex === windows.length) {
       nextIndex = 0
