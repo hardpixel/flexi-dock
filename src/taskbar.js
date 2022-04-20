@@ -1,4 +1,4 @@
-import { GObject, Graphene, Clutter, Shell, St } from '#gi'
+import { GLib, GObject, Graphene, Clutter, Shell, St } from '#gi'
 import { appDisplay as AppDisplay } from '#ui'
 import { appFavorites as AppFavorites } from '#ui'
 import { dnd as DND } from '#ui'
@@ -205,7 +205,11 @@ class AppButton extends TaskBarItem {
         break
     }
 
-    if (direction) {
+    if (direction && !this._scrollDeadTimeId) {
+      this._scrollDeadTimeId = GLib.timeout_add(
+        GLib.PRIORITY_DEFAULT, 300, () => this._scrollDeadTimeId = 0
+      )
+
       this.cycleWindows(direction)
     }
 
