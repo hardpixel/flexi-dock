@@ -403,6 +403,10 @@ export class TaskBar extends St.BoxLayout {
     return this.appsList.items
   }
 
+  get showAppsAlign() {
+    return this.setting.get('show-apps-position')
+  }
+
   get iconSize() {
     return this.setting.get('icon-size', 'int')
   }
@@ -422,8 +426,8 @@ export class TaskBar extends St.BoxLayout {
   }
 
   _onAppsAlignment() {
-    const align = this.setting.get('show-apps-position')
-    const index = align == 'start' ? 0 : this.get_n_children()
+    const total = this.get_n_children()
+    const index = this.showAppsAlign == 'end' ? total : 0
 
     if (this.showApps !== this.get_child_at_index(index)) {
       this.remove_child(this.showApps)
