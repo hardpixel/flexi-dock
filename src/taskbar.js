@@ -84,7 +84,7 @@ class AppIcon extends AppDisplay.AppIcon {
 
   alignIndicator(side = St.Side.BOTTOM) {
     const xAlign = ['CENTER', 'END', 'CENTER', 'START']
-    const yAlign = ['START', 'CENTER', 'BOTTOM', 'CENTER']
+    const yAlign = ['START', 'CENTER', 'END', 'CENTER']
 
     this._dot.x_align = Clutter.ActorAlign[xAlign[side]]
     this._dot.y_align = Clutter.ActorAlign[yAlign[side]]
