@@ -74,7 +74,7 @@ class AppIcon extends AppDisplay.AppIcon {
 
   setSide(side) {
     this.side = St.Side[side.toUpperCase()]
-    this.updateIndicator(side)
+    this.alignIndicator(this.side)
 
     if (this._menu) {
       this._menu.destroy()
@@ -82,20 +82,12 @@ class AppIcon extends AppDisplay.AppIcon {
     }
   }
 
-  updateIndicator(side) {
-    const start  = Clutter.ActorAlign.START
-    const center = Clutter.ActorAlign.CENTER
-    const end    = Clutter.ActorAlign.END
+  alignIndicator(side = St.Side.BOTTOM) {
+    const xAlign = ['CENTER', 'END', 'CENTER', 'START']
+    const yAlign = ['START', 'CENTER', 'BOTTOM', 'CENTER']
 
-    if (['left', 'right'].includes(side)) {
-      this._dot.x_align = side == 'left' ? start : end
-      this._dot.y_align = center
-    }
-
-    else {
-      this._dot.x_align = center
-      this._dot.y_align = side == 'top' ? start : end
-    }
+    this._dot.x_align = Clutter.ActorAlign[xAlign[side]]
+    this._dot.y_align = Clutter.ActorAlign[yAlign[side]]
   }
 }
 
@@ -314,11 +306,13 @@ class AppsContainer extends St.ScrollView {
     this.y_align = vertical ? custom : expand
   }
 
-  createApp(app, index, size) {
+  createApp(app, index, { size, side }) {
     const actor = new AppButton(app)
     this.mainBox.add_child(actor)
 
     actor.setIconSize(size)
+    actor.setSide(side)
+
     actor.show()
   }
 }
@@ -332,6 +326,8 @@ export class TaskBar extends St.BoxLayout {
     super({
       style_class: 'flexi-taskbar'
     })
+
+    this.fixedSide = 'bottom'
 
     this.wmTracker = Shell.WindowTracker.get_default()
     this.appSystem = Shell.AppSystem.get_default()
@@ -420,6 +416,8 @@ export class TaskBar extends St.BoxLayout {
   }
 
   setLayout(side, vertical) {
+    this.fixedSide = side
+
     this.set_vertical(vertical)
     this.toggleClassName('vertical', vertical)
 
@@ -492,7 +490,10 @@ export class TaskBar extends St.BoxLayout {
 
     newIds.forEach((id, index) => {
       if (!oldIds.includes(id)) {
-        this.appsList.createApp(newApps[index], index, this.iconSize)
+        this.appsList.createApp(newApps[index], index, {
+          size: this.iconSize,
+          side: this.fixedSide
+        })
       }
     })
   }
