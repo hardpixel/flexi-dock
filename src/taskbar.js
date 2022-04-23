@@ -306,6 +306,14 @@ class AppsContainer extends St.ScrollView {
     )
   }
 
+  setAlign(align, vertical) {
+    const expand = Clutter.ActorAlign.FILL
+    const custom = Clutter.ActorAlign[align.toUpperCase()]
+
+    this.x_align = vertical ? expand : custom
+    this.y_align = vertical ? custom : expand
+  }
+
   createApp(app, index, { size, side }) {
     const actor = new AppButton(app)
 
@@ -437,11 +445,7 @@ export class TaskBar extends St.BoxLayout {
   }
 
   _onIconAlignment() {
-    const expand = Clutter.ActorAlign.FILL
-    const custom = Clutter.ActorAlign[this.iconAlign.toUpperCase()]
-
-    this.appsList.x_align = this.vertical ? expand : custom
-    this.appsList.y_align = this.vertical ? custom : expand
+    this.appsList.setAlign(this.iconAlign, this.vertical)
   }
 
   _onIconSize() {
