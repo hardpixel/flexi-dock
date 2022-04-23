@@ -75,6 +75,11 @@ class AppIcon extends AppDisplay.AppIcon {
   setSide(side) {
     this.side = St.Side[side.toUpperCase()]
     this.updateIndicator(side)
+
+    if (this._menu) {
+      this._menu.destroy()
+      this._menu = null
+    }
   }
 
   updateIndicator(side) {
