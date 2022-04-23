@@ -428,7 +428,6 @@ export class TaskBar extends St.BoxLayout {
 
   _onAppsAlignment() {
     const align = this.setting.get('show-apps-position')
-    const value = Clutter.ActorAlign[align.toUpperCase()]
     const index = align == 'start' ? 0 : this.get_n_children()
 
     if (this.showApps !== this.get_child_at_index(index)) {
