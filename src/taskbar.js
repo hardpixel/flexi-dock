@@ -383,10 +383,6 @@ export class TaskBar extends St.BoxLayout {
     )
 
     this.connect(
-      'notify::vertical', this._onVertical.bind(this)
-    )
-
-    this.connect(
       'destroy', this._onDestroy.bind(this)
     )
 
@@ -415,9 +411,20 @@ export class TaskBar extends St.BoxLayout {
     return this.setting.get('icon-alignment')
   }
 
+  toggleClassName(name, enable) {
+    if (enable) {
+      this.add_style_class_name(name)
+    } else {
+      this.remove_style_class_name(name)
+    }
+  }
+
   setLayout(side, vertical) {
     this.set_vertical(vertical)
+    this.toggleClassName('vertical', vertical)
+
     this.appItems.forEach(item => item.setSide(side))
+    this._onIconAlignment()
   }
 
   _onDestroy() {
@@ -442,16 +449,6 @@ export class TaskBar extends St.BoxLayout {
   _onIconSize() {
     this.showApps.setIconSize(this.iconSize)
     this.appItems.forEach(item => item.setIconSize(this.iconSize))
-  }
-
-  _onVertical() {
-    this._onIconAlignment()
-
-    if (this.vertical) {
-      this.add_style_class_name('vertical')
-    } else {
-      this.remove_style_class_name('vertical')
-    }
   }
 
   _onFocusApp() {
