@@ -179,6 +179,8 @@ export class Panel extends St.Bin {
   _updatePosition() {
     const position = this.setting.get('panel-position')
 
+    this.taskbar.setLayout(position, false)
+
     let [posX, posY, dash] = [0, 0, 30]
     let [m, naturalHeight] = this.get_preferred_height(-1)
 

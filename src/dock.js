@@ -88,7 +88,7 @@ export class Dock extends St.Bin {
     this.dockbar.x_align = vertical ? expand : custom
     this.dockbar.y_align = vertical ? custom : expand
 
-    this.taskbar.set_vertical(vertical)
+    this.taskbar.setLayout(position, vertical)
 
     const width  = vertical ? -1 : this.monitor.width
     const height = vertical ? this.monitor.height - Main.panel.height : -1

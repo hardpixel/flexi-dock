@@ -314,13 +314,11 @@ class AppsContainer extends St.ScrollView {
     this.y_align = vertical ? custom : expand
   }
 
-  createApp(app, index, { size, side }) {
+  createApp(app, index, size) {
     const actor = new AppButton(app)
+    this.mainBox.add_child(actor)
 
     actor.setIconSize(size)
-    actor.setSide(side)
-
-    this.mainBox.add_child(actor)
     actor.show()
   }
 }
@@ -374,14 +372,6 @@ export class TaskBar extends St.BoxLayout {
       'icon-size', this._onIconSize.bind(this)
     )
 
-    this.setting.connect(
-      'dock-position', this._onPosition.bind(this)
-    )
-
-    this.setting.connect(
-      'panel-position', this._onPosition.bind(this)
-    )
-
     this.showApps = new ShowAppsButton()
     this.add_child(this.showApps)
 
@@ -421,12 +411,9 @@ export class TaskBar extends St.BoxLayout {
     return this.setting.get('icon-alignment')
   }
 
-  get dockMode() {
-    return this.setting.get('mode')
-  }
-
-  get dockSide() {
-    return this.setting.get(`${this.dockMode}-position`)
+  setLayout(side, vertical) {
+    this.set_vertical(vertical)
+    this.appItems.forEach(item => item.setSide(side))
   }
 
   _onDestroy() {
@@ -451,10 +438,6 @@ export class TaskBar extends St.BoxLayout {
   _onIconSize() {
     this.showApps.setIconSize(this.iconSize)
     this.appItems.forEach(item => item.setIconSize(this.iconSize))
-  }
-
-  _onPosition() {
-    this.appItems.forEach(item => item.setSide(this.dockSide))
   }
 
   _onVertical() {
@@ -508,10 +491,7 @@ export class TaskBar extends St.BoxLayout {
 
     newIds.forEach((id, index) => {
       if (!oldIds.includes(id)) {
-        this.appsList.createApp(newApps[index], index, {
-          size: this.iconSize,
-          side: this.dockSide
-        })
+        this.appsList.createApp(newApps[index], index, this.iconSize)
       }
     })
   }
