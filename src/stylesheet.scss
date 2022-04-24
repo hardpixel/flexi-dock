@@ -27,11 +27,32 @@
 
 .flexi-dock {
   background-color: rgba(black, 0.7);
-  padding: 8px;
   spacing: 8px;
+
+  &.left, &.right {
+    padding: 8px 0;
+
+    .show-apps, .app-well-app {
+      padding: 0 8px !important;
+    }
+  }
+
+  &.top, &.bottom {
+    padding: 0 8px;
+
+    .show-apps, .app-well-app {
+      padding: 8px 0 !important;
+    }
+  }
 
   .overview-icon {
     border-radius: 0.5em !important;
+  }
+}
+
+.flexi-panel {
+  .overview-icon {
+    border-radius: 0 !important;
   }
 }
 
@@ -99,11 +120,5 @@
     StIcon:last-child {
       margin-right: 3px;
     }
-  }
-}
-
-.flexi-panel {
-  .overview-icon {
-    border-radius: 0 !important;
   }
 }
