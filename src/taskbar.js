@@ -1,4 +1,4 @@
-import { GLib, GObject, Graphene, Clutter, Shell, St } from '#gi'
+import { GLib, GObject, Graphene, Clutter, Meta, Shell, St } from '#gi'
 import { appDisplay as AppDisplay } from '#ui'
 import { appFavorites as AppFavorites } from '#ui'
 import { dnd as DND } from '#ui'
@@ -104,11 +104,25 @@ class AppButton extends TaskBarItem {
       opacity: 0
     })
 
+    this.signals = new Signals()
+
+    this.signals.connect(
+      app, 'windows-changed', this._onWindowsChanged.bind(this)
+    )
+
     this.button = new AppIcon(app)
     this.set_child(this.button)
 
     this.button.connect(
       'scroll-event', this._onMouseScroll.bind(this)
+    )
+
+    this.connect(
+      'notify::position', this._onPositionChanged.bind(this)
+    )
+
+    this.connect(
+      'destroy', this._onDestroy.bind(this)
     )
   }
 
@@ -126,10 +140,12 @@ class AppButton extends TaskBarItem {
 
   setSide(side) {
     this.button.setSide(side)
+    this.updateIconGeometry()
   }
 
   setIconSize(size) {
     this.icon.setIconSize(size)
+    this.updateIconGeometry()
   }
 
   setActive(active) {
@@ -146,7 +162,8 @@ class AppButton extends TaskBarItem {
       scale_y: 1,
       opacity: 255,
       duration: 200,
-      mode: Clutter.AnimationMode.EASE_OUT_QUAD
+      mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+      onComplete: () => this.updateIconGeometry()
     })
   }
 
@@ -158,6 +175,25 @@ class AppButton extends TaskBarItem {
       duration: 200,
       mode: Clutter.AnimationMode.EASE_OUT_QUAD,
       onComplete: () => this.destroy()
+    })
+  }
+
+  updateIconGeometry() {
+    if (this.get_stage() == null)
+      return
+
+    const [posX, posY] = this.get_transformed_position()
+    const [boxW, boxH] = this.get_transformed_size()
+
+    const rect = new Meta.Rectangle({
+      x: posX + (boxW / 2),
+      y: posY + (boxH / 2)
+    })
+
+    this.windows.forEach(win => {
+      if (win.get_monitor() == Main.layoutManager.primaryIndex) {
+        win.set_icon_geometry(rect)
+      }
     })
   }
 
@@ -220,6 +256,18 @@ class AppButton extends TaskBarItem {
     }
 
     return Clutter.EVENT_STOP
+  }
+
+  _onWindowsChanged() {
+    this.updateIconGeometry()
+  }
+
+  _onPositionChanged() {
+    this.updateIconGeometry()
+  }
+
+  _onDestroy() {
+    this.signals.disconnectAll()
   }
 }
 
