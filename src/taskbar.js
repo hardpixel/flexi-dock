@@ -105,15 +105,13 @@ class AppButton extends TaskBarItem {
     })
 
     this.signals = new Signals()
+    this.appIcon = new AppIcon(app)
 
     this.signals.connect(
       app, 'windows-changed', this._onWindowsChanged.bind(this)
     )
 
-    this.button = new AppIcon(app)
-    this.set_child(this.button)
-
-    this.button.connect(
+    this.appIcon.connect(
       'scroll-event', this._onMouseScroll.bind(this)
     )
 
@@ -124,14 +122,16 @@ class AppButton extends TaskBarItem {
     this.connect(
       'destroy', this._onDestroy.bind(this)
     )
+
+    this.set_child(this.appIcon)
   }
 
   get app() {
-    return this.button.app
+    return this.appIcon.app
   }
 
   get icon() {
-    return this.button.icon
+    return this.appIcon.icon
   }
 
   get windows() {
@@ -139,7 +139,7 @@ class AppButton extends TaskBarItem {
   }
 
   setSide(side) {
-    this.button.setSide(side)
+    this.appIcon.setSide(side)
     this.updateIconGeometry()
   }
 
@@ -150,9 +150,9 @@ class AppButton extends TaskBarItem {
 
   setActive(active) {
     if (active) {
-      this.button.add_style_pseudo_class('checked')
+      this.appIcon.add_style_pseudo_class('checked')
     } else {
-      this.button.remove_style_pseudo_class('checked')
+      this.appIcon.remove_style_pseudo_class('checked')
     }
   }
 
