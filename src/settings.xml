@@ -1,66 +1,66 @@
-<schemalist gettext-domain="gnome-shell-extensions">
-  <enum id="{schemaName}.mode">
+<schemalist>
+  <enum id="mode">
     <value value="0" nick="dock" />
     <value value="1" nick="panel" />
   </enum>
 
-  <enum id="{schemaName}.dockPosition">
+  <enum id="dockPosition">
     <value value="0" nick="left" />
     <value value="1" nick="right" />
     <value value="2" nick="top" />
     <value value="3" nick="bottom" />
   </enum>
 
-  <enum id="{schemaName}.dockAlignment">
+  <enum id="dockAlignment">
     <value value="0" nick="fill" />
     <value value="1" nick="start" />
     <value value="2" nick="end" />
     <value value="3" nick="center" />
   </enum>
 
-  <enum id="{schemaName}.panelPosition">
+  <enum id="panelPosition">
     <value value="0" nick="top" />
     <value value="1" nick="bottom" />
   </enum>
 
-  <enum id="{schemaName}.showAppsPosition">
+  <enum id="showAppsPosition">
     <value value="0" nick="start" />
     <value value="1" nick="end" />
   </enum>
 
-  <enum id="{schemaName}.iconAlignment">
+  <enum id="iconAlignment">
     <value value="0" nick="start" />
     <value value="1" nick="end" />
     <value value="2" nick="center" />
   </enum>
 
-  <schema id="{schemaName}" path="{schemaPath}">
-    <key name="mode" enum="{schemaName}.mode">
+  <schema>
+    <key name="mode" enum="mode">
       <default>"dock"</default>
-      <summary>The extension has initialized.</summary>
+      <summary>Set dock mode.</summary>
     </key>
 
-    <key name="dock-position" enum="{schemaName}.dockPosition">
+    <key name="dock-position" enum="dockPosition">
       <default>"bottom"</default>
       <summary>Set dock mode position.</summary>
     </key>
 
-    <key name="dock-alignment" enum="{schemaName}.dockAlignment">
+    <key name="dock-alignment" enum="dockAlignment">
       <default>"center"</default>
       <summary>Set dock mode alignment.</summary>
     </key>
 
-    <key name="panel-position" enum="{schemaName}.panelPosition">
+    <key name="panel-position" enum="panelPosition">
       <default>"bottom"</default>
       <summary>Set panel mode position.</summary>
     </key>
 
-    <key name="show-apps-position" enum="{schemaName}.showAppsPosition">
+    <key name="show-apps-position" enum="showAppsPosition">
       <default>"start"</default>
       <summary>Set show apps button position.</summary>
     </key>
 
-    <key name="icon-alignment" enum="{schemaName}.iconAlignment">
+    <key name="icon-alignment" enum="iconAlignment">
       <default>"start"</default>
       <summary>Set taskbar icons alignment.</summary>
     </key>
