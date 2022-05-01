@@ -573,7 +573,11 @@ export class TaskBar extends St.BoxLayout {
     })
 
     remove.forEach(child => {
-      child.animateDestroy()
+      if (newApps.includes(child.app)) {
+        child.destroy()
+      } else {
+        child.animateDestroy()
+      }
     })
 
     create.forEach(({ item }) => {
