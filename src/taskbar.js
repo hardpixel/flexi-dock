@@ -353,16 +353,6 @@ class AppsContainer extends St.ScrollView {
     this.x_align = vertical ? expand : custom
     this.y_align = vertical ? custom : expand
   }
-
-  createApp(app, index, { size, side }) {
-    const actor = new AppButton(app)
-    this.mainBox.add_child(actor)
-
-    actor.setIconSize(size)
-    actor.setSide(side)
-
-    actor.show()
-  }
 }
 
 export class TaskBar extends St.BoxLayout {
@@ -473,6 +463,15 @@ export class TaskBar extends St.BoxLayout {
     this._onIconAlignment()
   }
 
+  createApp(app) {
+    const button = new AppButton(app)
+
+    button.setIconSize(this.iconSize)
+    button.setSide(this.fixedSide)
+
+    return button
+  }
+
   _onDestroy() {
     this.setting.disconnectAll()
     this.signals.disconnectAll()
@@ -514,7 +513,8 @@ export class TaskBar extends St.BoxLayout {
     const appsMap = this.favorites.getFavoriteMap()
     const running = this.appSystem.get_running()
 
-    const oldApps = [...this.appItems]
+    const oldList = this.appItems
+    const oldApps = oldList.map(item => item.app)
     const newApps = []
 
     for (const id in appsMap) {
@@ -527,22 +527,57 @@ export class TaskBar extends St.BoxLayout {
       }
     }
 
-    const oldIds = oldApps.map(item => item.app.get_id())
-    const newIds = newApps.map(app => app.get_id())
+    const create = []
+    const remove = []
 
-    oldIds.forEach((id, index) => {
-      if (!newIds.includes(id)) {
-        oldApps[index].animateDestroy()
+    let newIndex = 0
+    let oldIndex = 0
+
+    while (newIndex < newApps.length || oldIndex < oldApps.length) {
+      const oldApp = oldApps.length > oldIndex ? oldApps[oldIndex] : null
+      const newApp = newApps.length > newIndex ? newApps[newIndex] : null
+
+      if (oldApp == newApp) {
+        oldIndex++
+        newIndex++
+        continue
       }
+
+      if (oldApp && !newApps.includes(oldApp)) {
+        remove.push(oldList[oldIndex])
+        oldIndex++
+        continue
+      }
+
+      if (newApp && !oldApps.includes(newApp)) {
+        create.push({ item: this.createApp(newApp), pos: newIndex })
+        newIndex++
+        continue
+      }
+
+      const nextApp = newApps.length > newIndex + 1 ? newApps[newIndex + 1] : null
+      const addHere = nextApp && nextApp == oldApp
+      const removed = remove.some(item => item.app == newApp)
+
+      if (addHere || removed) {
+        create.push({ item: this.createApp(newApp), pos: newIndex + remove.length })
+        newIndex++
+      } else {
+        remove.push(oldList[oldIndex])
+        oldIndex++
+      }
+    }
+
+    create.forEach(({ item, pos }) => {
+      this.appsBox.insert_child_at_index(item, pos)
     })
 
-    newIds.forEach((id, index) => {
-      if (!oldIds.includes(id)) {
-        this.appsList.createApp(newApps[index], index, {
-          size: this.iconSize,
-          side: this.fixedSide
-        })
-      }
+    remove.forEach(child => {
+      child.animateDestroy()
+    })
+
+    create.forEach(({ item }) => {
+      item.show()
     })
   }
 }
