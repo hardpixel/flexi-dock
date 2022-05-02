@@ -28,6 +28,43 @@ class TaskBarIcon extends St.Bin {
   }
 }
 
+class TaskBarSeparator extends St.Widget {
+  static {
+    GObject.registerClass(this)
+  }
+
+  constructor() {
+    super({
+      style_class: 'dash-separator',
+      x_align: Clutter.ActorAlign.CENTER,
+      y_align: Clutter.ActorAlign.CENTER
+    })
+
+    this.sideSize = 0
+    this.vertical = false
+  }
+
+  setSize(size) {
+    this.sideSize = size
+    this.updateGeometry()
+  }
+
+  setVertical(vertical) {
+    this.vertical = vertical
+    this.updateGeometry()
+  }
+
+  updateGeometry() {
+    if (this.vertical) {
+      this.width  = this.sideSize
+      this.height = 1
+    } else {
+      this.width  = 1
+      this.height = this.sideSize
+    }
+  }
+}
+
 class TaskBarItem extends St.Bin {
   static {
     GObject.registerClass(this)
@@ -461,6 +498,8 @@ export class TaskBar extends St.BoxLayout {
 
     this.appItems.forEach(item => item.setSide(side))
     this._onIconAlignment()
+
+    this.separator && this.separator.setVertical(vertical)
   }
 
   createApp(app) {
@@ -494,6 +533,8 @@ export class TaskBar extends St.BoxLayout {
   _onIconSize() {
     this.showApps.setIconSize(this.iconSize)
     this.appItems.forEach(item => item.setIconSize(this.iconSize))
+
+    this.separator && this.separator.setSize(this.iconSize)
   }
 
   _onFocusApp() {
@@ -583,5 +624,25 @@ export class TaskBar extends St.BoxLayout {
     create.forEach(({ item }) => {
       item.show()
     })
+
+    const favsSize = Object.keys(appsMap).length
+    const appsSize = oldList.length + create.length - remove.length
+
+    if (favsSize > 0 && favsSize < appsSize) {
+      if (!this.separator) {
+        this.separator = new TaskBarSeparator()
+        this.separator.setSize(this.iconSize)
+        this.separator.setVertical(this.vertical)
+
+        this.appsBox.add_child(this.separator)
+      }
+
+      this.appsBox.set_child_at_index(this.separator, favsSize)
+    } else if (this.separator) {
+      this.separator.destroy()
+      this.separator = null
+    }
+
+    this.appsBox.queue_relayout()
   }
 }
