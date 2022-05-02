@@ -56,11 +56,9 @@ class TaskBarSeparator extends St.Widget {
 
   updateGeometry() {
     if (this.vertical) {
-      this.width  = this.sideSize
-      this.height = 1
+      this.set_size(this.sideSize, 1)
     } else {
-      this.width  = 1
-      this.height = this.sideSize
+      this.set_size(1, this.sideSize)
     }
   }
 }
