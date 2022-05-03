@@ -75,6 +75,99 @@ class TaskBarItem extends St.Bin {
       y_align: Clutter.ActorAlign.START,
       ...params
     })
+
+    this.label = new St.Label({
+      style_class: 'dash-label'
+    })
+
+    this.label.hide()
+    Main.layoutManager.addChrome(this.label)
+
+    this.side = St.Side.BOTTOM
+  }
+
+  setSide(side) {
+    this.side = St.Side[side.toUpperCase()]
+    this.hideLabel()
+  }
+
+  showLabel() {
+    this.label.opacity = 0
+    this.label.show()
+
+    const [stageX, stageY] = this.get_transformed_position()
+    const [stageW, stageH] = global.stage.get_size()
+
+    const node = this.label.get_theme_node()
+    const ngap = node.get_length('-y-offset')
+    const vert = this.side == St.Side.LEFT || this.side == St.Side.RIGHT
+
+    let xPos = 0
+    let yPos = 0
+
+    if (vert) {
+      const offset = Math.floor((this.height - this.label.height) / 2)
+      yPos = Math.clamp(stageY + offset, 0, stageH - this.label.height)
+    } else {
+      const offset = Math.floor((this.width - this.label.width) / 2)
+      xPos = Math.clamp(stageX + offset, 0, stageW - this.label.width)
+    }
+
+    if (this.side == St.Side.LEFT) {
+      xPos = stageX + this.width + ngap
+    }
+
+    else if (this.side == St.Side.RIGHT) {
+      xPos = stageX - this.label.width - ngap
+    }
+
+    else if (this.side == St.Side.TOP) {
+      yPos = stageY + this.height + ngap
+    }
+
+    else if (this.side == St.Side.BOTTOM) {
+      yPos = stageY - this.label.height - ngap
+    }
+
+    this.label.set_position(xPos, yPos)
+
+    this.label.ease({
+      opacity: 255,
+      duration: 150,
+      mode: Clutter.AnimationMode.EASE_OUT_QUAD
+    })
+  }
+
+  setLabelText(text) {
+    this.label.set_text(text)
+    this.child.accessible_name = text
+  }
+
+  hideLabel() {
+    this.label.ease({
+      opacity: 0,
+      duration: 100,
+      mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+      onComplete: () => this.label.hide()
+    })
+  }
+
+  hookLabel(actor) {
+    actor.connect(
+      'clicked', this.hideLabel.bind(this)
+    )
+
+    Main.overview.connectObject(
+      'hiding', this.hideLabel.bind(this), actor
+    )
+
+    actor.connect('notify::hover', () => {
+      if (actor.get_hover()) {
+        this.showLabel()
+      } else {
+        this.hideLabel()
+      }
+    })
   }
 }
 
@@ -108,7 +201,7 @@ class AppIcon extends AppDisplay.AppIcon {
   undoScaleAndFade() {}
 
   setSide(side) {
-    this.side = St.Side[side.toUpperCase()]
+    this.side = side
     this.alignIndicator(this.side)
 
     if (this._menu) {
@@ -159,6 +252,9 @@ class AppButton extends TaskBarItem {
     )
 
     this.set_child(this.appIcon)
+
+    this.setLabelText(app.get_name())
+    this.hookLabel(this.appIcon)
   }
 
   get app() {
@@ -174,7 +270,8 @@ class AppButton extends TaskBarItem {
   }
 
   setSide(side) {
-    this.appIcon.setSide(side)
+    super.setSide(side)
+    this.appIcon.setSide(this.side)
     this.updateIconGeometry()
   }
 
@@ -333,6 +430,9 @@ class ShowAppsButton extends TaskBarItem {
 
     this.button.set_child(this.icon)
     this.set_child(this.button)
+
+    this.setLabelText(_('Show Applications'))
+    this.hookLabel(this.button)
   }
 
   setIconSize(size) {
@@ -494,6 +594,7 @@ export class TaskBar extends St.BoxLayout {
     this.set_vertical(vertical)
     this.toggleClassName('vertical', vertical)
 
+    this.showApps.setSide(side)
     this.appItems.forEach(item => item.setSide(side))
     this._onIconAlignment()
 
