@@ -331,7 +331,7 @@ class AppButton extends TaskBarItem {
 
   activateLastWindow() {
     const windows = this.windows.sort((a, b) => {
-      return a.get_user_time() < b.get_user_time()
+      return b.get_user_time() - a.get_user_time()
     })
 
     Main.activateWindow(windows[0])
@@ -339,7 +339,7 @@ class AppButton extends TaskBarItem {
 
   cycleWindows(direction) {
     const windows = this.windows.sort((a, b) => {
-      return a.get_stable_sequence() > b.get_stable_sequence()
+      return a.get_stable_sequence() - b.get_stable_sequence()
     })
 
     let currIndex = windows.indexOf(global.display.focus_window)
