@@ -98,10 +98,13 @@ export class Panel extends St.Bin {
     this.centerBox = new PanelBox('center')
     this.rightBox  = new PanelBox('right')
 
-    this.monitor = Main.layoutManager.primaryMonitor
     this.taskbar = new TaskBar()
     this.signals = new Signals()
     this.setting = new Settings()
+
+    this.signals.connect(
+      Main.layoutManager, 'monitors-changed', this._updatePosition.bind(this)
+    )
 
     this.signals.connect(
       this.taskbar, 'notify::width', this._updatePosition.bind(this)
@@ -116,6 +119,10 @@ export class Panel extends St.Bin {
     )
 
     this.set_child(this.taskbar)
+  }
+
+  get monitor() {
+    return Main.layoutManager.primaryMonitor
   }
 
   enable() {
@@ -181,11 +188,11 @@ export class Panel extends St.Bin {
 
     this.taskbar.setLayout(position, false)
 
-    let [posX, posY, dash] = [0, 0, 30]
+    let [posX, posY, dash] = [0, this.monitor.y, 30]
     let [m, naturalHeight] = this.get_preferred_height(-1)
 
     if (position == 'bottom') {
-      posY = this.monitor.height - naturalHeight
+      posY = this.monitor.y + this.monitor.height - naturalHeight
       dash = naturalHeight
     }
 

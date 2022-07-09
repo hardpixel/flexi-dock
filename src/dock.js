@@ -21,13 +21,16 @@ export class Dock extends St.Bin {
       can_focus: true
     })
 
-    this.monitor = Main.layoutManager.primaryMonitor
     this.taskbar = new TaskBar()
     this.signals = new Signals()
     this.setting = new Settings()
 
     this.signals.connect(
       Main.layoutManager, 'startup-complete', this._syncVisible.bind(this)
+    )
+
+    this.signals.connect(
+      Main.layoutManager, 'monitors-changed', this._updateGeometry.bind(this)
     )
 
     this.signals.connect(
@@ -56,6 +59,10 @@ export class Dock extends St.Bin {
 
     this.dockbar.set_child(this.taskbar)
     this.set_child(this.dockbar)
+  }
+
+  get monitor() {
+    return Main.layoutManager.primaryMonitor
   }
 
   enable() {
@@ -96,12 +103,12 @@ export class Dock extends St.Bin {
     this.set_size(width, height)
 
     const posX = position == 'right'
-      ? this.monitor.width - this.width
-      : 0
+      ? this.monitor.x + this.monitor.width - this.width
+      : this.monitor.x
 
     const posY = position == 'bottom'
-      ? this.monitor.height - this.height
-      : Main.panel.height
+      ? this.monitor.y + this.monitor.height - this.height
+      : this.monitor.y + Main.panel.height
 
     this.set_position(posX, posY)
 
