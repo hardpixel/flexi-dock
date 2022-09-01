@@ -1,0 +1,18 @@
+<svg height="128" width="128" xmlns="http://www.w3.org/2000/svg">
+  <rect fill="#e01b24" height="104" rx="8" width="104" x="12" y="15"/>
+  <path d="m20 119h88c4.432 0 8-3.568 8-8v-20h-104v20c0 4.432 3.568 8 8 8z" opacity=".8"/>
+  <path d="m20 15h88c4.432 0 8 3.568 8 8v5h-104v-5c0-4.432 3.568-8 8-8z" opacity=".8"/>
+  <g fill="#fff">
+    <rect height="3" rx="1" width="3" x="102" y="20"/>
+    <rect height="3" rx="1" width="3" x="107" y="20"/>
+    <rect height="3" rx="1" stroke-width="1.73205" width="9" x="59.5" y="20"/>
+    <rect height="3" rx="1" width="3" x="18" y="20"/>
+    <rect height="3" rx="1" width="3" x="23" y="20"/>
+  </g>
+  <text font-family="sans-serif" font-size="16.2204" letter-spacing="0" stroke-width=".405509" transform="scale(1.0408333 .96076864)" word-spacing="0" x="46.467514" y="114.33326"><tspan fill="#fff" font-family="Roboto" font-weight="bold" stroke-width=".405509" x="46.467514" y="114.33326">flexi</tspan></text>
+  <g fill="#fff">
+    <circle cx="40" cy="60" r="10"/>
+    <circle cx="64" cy="60" opacity=".9" r="10"/>
+    <circle cx="88" cy="60" opacity=".8" r="10"/>
+  </g>
+</svg>
