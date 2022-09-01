@@ -79,8 +79,6 @@ export class Dock extends St.Bin {
     this.setting.disconnectAll()
     this.signals.disconnectAll()
 
-    Main.layoutManager.removeChrome(this)
-
     this.destroy()
   }
 
