@@ -1,5 +1,7 @@
-# Flexi Dock (WIP)
-Gnome Shell extension to provide a flexible applications dock.
+# Flexi Dock
+Gnome Shell extension to provide a flexible applications dock with panel mode support.
+
+[![Build](https://github.com/hardpixel/flexi-dock/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/hardpixel/flexi-dock/actions/workflows/build.yml)
 
 ### Installation
 The easiest way to install this extension is via the official [Gnome Shell Extensions](https://extensions.gnome.org) resource page [here](https://extensions.gnome.org/extension/4488/flexi-dock).
