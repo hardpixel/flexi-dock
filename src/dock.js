@@ -26,10 +26,6 @@ export class Dock extends St.Bin {
     this.setting = new Settings()
 
     this.signals.connect(
-      Main.layoutManager, 'startup-complete', this._syncVisible.bind(this)
-    )
-
-    this.signals.connect(
       Main.layoutManager, 'monitors-changed', this._updateGeometry.bind(this)
     )
 
@@ -72,6 +68,7 @@ export class Dock extends St.Bin {
       trackFullscreen: true
     })
 
+    this._syncVisible()
     this._updateGeometry()
   }
 
