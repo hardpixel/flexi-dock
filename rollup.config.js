@@ -1,6 +1,9 @@
+import pkg from './package.json'
+
 import extension from 'rollup-plugin-gsext'
 import sass from 'rollup-plugin-sass'
 import del from 'rollup-plugin-delete'
+import zip from 'rollup-plugin-zipdir'
 
 export default {
   input: [
@@ -12,15 +15,23 @@ export default {
     format: 'esm'
   },
   plugins: [
-    extension(),
+    extension({
+      metadata: {
+        version: Number(pkg.version)
+      }
+    }),
     sass({
       output: 'dist/stylesheet.css'
     }),
     del({
       hook: 'writeBundle',
       targets: [
-        'dist/stylesheet.js'
+        'dist/stylesheet.js',
+        'build/*.zip'
       ]
+    }),
+    process.env.package && zip({
+      outputDir: 'build'
     })
   ]
 }
