@@ -40,7 +40,8 @@ class Preferences extends Adw.PreferencesPage {
           title: 'Size',
           type: 'int',
           subtitle: 'Set taskbar icons size',
-          setting: 'icon-size'
+          setting: 'icon-size',
+          options: { lower: 16, upper: 128 }
         },
         {
           title: 'Alignment',
@@ -114,9 +115,11 @@ class Preferences extends Adw.PreferencesPage {
       if (type == 'int') {
         const adjust = new Gtk.Adjustment({
           value: this.settings.get_int(setting),
-          lower: 16,
-          upper: 512,
-          step_increment: 1
+          lower: 0,
+          upper: 100,
+          page_size: 0,
+          step_increment: 1,
+          ...options
         })
 
         widget = new Gtk.SpinButton({ valign: Gtk.Align.CENTER })
