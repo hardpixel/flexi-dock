@@ -26,6 +26,10 @@ export class Dock extends St.Bin {
     this.setting = new Settings()
 
     this.signals.connect(
+      global.display, 'in-fullscreen-changed', this._syncVisible.bind(this)
+    )
+
+    this.signals.connect(
       Main.layoutManager, 'monitors-changed', this._updateGeometry.bind(this)
     )
 
@@ -59,6 +63,10 @@ export class Dock extends St.Bin {
 
   get monitor() {
     return Main.layoutManager.primaryMonitor
+  }
+
+  get shouldHide() {
+    return Main.overview.visibleTarget || this.monitor.inFullscreen
   }
 
   enable() {
@@ -116,7 +124,7 @@ export class Dock extends St.Bin {
   }
 
   _syncVisible() {
-    if (Main.overview.visibleTarget) {
+    if (this.shouldHide) {
       this.hide()
     } else {
       this.show()
