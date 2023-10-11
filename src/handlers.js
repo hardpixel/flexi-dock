@@ -1,4 +1,4 @@
-import { extensionUtils as ExtensionUtils } from '#misc'
+import { useSettings } from '#me/context'
 
 export class Signals {
   constructor() {
@@ -28,7 +28,7 @@ export class Signals {
 export class Settings {
   constructor(proxy) {
     this.store = new Set()
-    this.proxy = proxy || ExtensionUtils.getSettings()
+    this.proxy = proxy || useSettings()
   }
 
   get(setting, type = 'string') {

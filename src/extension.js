@@ -1,8 +1,15 @@
+import { Extension } from '#extensions/extension'
+import { setContext } from '#me/context'
 import { Settings } from '#me/handlers'
 import { Dock } from '#me/dock'
 import { Panel } from '#me/panel'
 
-class Extension {
+export default class FlexiDock extends Extension {
+  constructor(metadata) {
+    super(metadata)
+    setContext(this)
+  }
+
   enable() {
     this.settings = new Settings()
 
@@ -40,8 +47,4 @@ class Extension {
       this.dock.enable()
     }
   }
-}
-
-export function init() {
-  return new Extension()
 }

@@ -1,6 +1,5 @@
-import Gi from '#_gi'
-
 import { GObject, Clutter, St } from '#gi'
+import { InjectionManager } from '#extensions/extension';
 import { main as Main } from '#ui'
 
 import { Signals, Settings } from '#me/handlers'
@@ -101,6 +100,7 @@ export class Panel extends St.Bin {
     this.taskbar = new TaskBar()
     this.signals = new Signals()
     this.setting = new Settings()
+    this.injects = new InjectionManager()
 
     this.signals.connect(
       Main.layoutManager, 'monitors-changed', this._updatePosition.bind(this)
@@ -139,7 +139,6 @@ export class Panel extends St.Bin {
     Main.panel.add_style_class_name('flexi-panel-container')
 
     Main.panel.statusArea.activities.hide()
-    Main.panel.statusArea.appMenu.hide()
 
     this._updatePosition()
     this._injectAllocate()
@@ -152,13 +151,11 @@ export class Panel extends St.Bin {
     this.centerBox.disable()
     this.rightBox.disable()
 
-    this._restoreAllocate()
-
     this.setting.disconnectAll()
     this.signals.disconnectAll()
+    this.injects.clear()
 
     Main.panel.statusArea.activities.show()
-    Main.panel.statusArea.appMenu.show()
 
     Main.uiGroup.remove_style_class_name('flexi-panel-enabled')
     Main.panel.remove_style_class_name('flexi-panel-container')
@@ -206,18 +203,10 @@ export class Panel extends St.Bin {
 
   _injectAllocate() {
     const proto = Object.getPrototypeOf(Main.panel)
-    const vfunc = proto[Gi.gobject_prototype_symbol]
 
-    vfunc[Gi.hook_up_vfunc_symbol]('allocate', (box) => {
-      this._doPanelAllocate(Main.panel, box)
+    this.injects.overrideMethod(proto, 'vfunc_allocate', () => {
+      return box => this._doPanelAllocate(Main.panel, box)
     })
-  }
-
-  _restoreAllocate() {
-    const proto = Object.getPrototypeOf(Main.panel)
-    const vfunc = proto[Gi.gobject_prototype_symbol]
-
-    vfunc[Gi.hook_up_vfunc_symbol]('allocate', proto.vfunc_allocate)
   }
 
   _doPanelAllocate(actor, box) {

@@ -7,6 +7,7 @@ import zip from 'rollup-plugin-zipdir'
 
 export default {
   input: [
+    'src/context.js',
     'src/metadata.json',
     'src/stylesheet.scss'
   ],
@@ -16,6 +17,7 @@ export default {
   },
   plugins: [
     extension({
+      useESM: true,
       metadata: {
         version: Number(pkg.version)
       }

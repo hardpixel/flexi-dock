@@ -1,7 +1,8 @@
 import { GObject, Gio, Gtk, Adw } from '#gi'
-import { extensionUtils as ExtensionUtils } from '#misc'
+import { ExtensionPreferences } from '#extensions/prefs';
+import { setContext, useSettings } from '#me/context'
 
-class Preferences extends Adw.PreferencesPage {
+class PreferencesPage extends Adw.PreferencesPage {
   static {
     GObject.registerClass(this)
   }
@@ -11,7 +12,7 @@ class Preferences extends Adw.PreferencesPage {
       title: 'Settings'
     })
 
-    this.settings = ExtensionUtils.getSettings()
+    this.settings = useSettings()
 
     this.addSection({
       title: 'General',
@@ -140,10 +141,13 @@ class Preferences extends Adw.PreferencesPage {
   }
 }
 
-export function init() {
-  ExtensionUtils.initTranslations()
-}
+export default class FlexiDockPreferences extends ExtensionPreferences {
+  constructor(metadata) {
+    super(metadata)
+    setContext(this)
+  }
 
-export function buildPrefsWidget() {
-  return new Preferences()
+  getPreferencesWidget() {
+    return new PreferencesPage()
+  }
 }
