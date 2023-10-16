@@ -4,7 +4,7 @@
   "description": "GNOME Shell dock extension",
   "repository": "https://github.com/hardpixel/flexi-dock",
   "author": "Jonian Guveli",
-  "license": "MIT",
+  "license": "GPL",
   "private": true,
   "scripts": {
     "build": "rollup -c",
