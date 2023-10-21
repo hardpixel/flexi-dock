@@ -493,7 +493,7 @@ class AppsContainer extends St.ScrollView {
 
 export class TaskBar extends St.BoxLayout {
   static {
-    GObject.registerClass(this)
+    GObject.registerClass({ Signals: { 'size-changed': {} } }, this)
   }
 
   constructor() {
@@ -635,6 +635,7 @@ export class TaskBar extends St.BoxLayout {
     this.appItems.forEach(item => item.setIconSize(this.iconSize))
 
     this.separator && this.separator.setSize(this.iconSize)
+    this.emit('size-changed')
   }
 
   _onFocusApp() {

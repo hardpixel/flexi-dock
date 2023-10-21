@@ -107,6 +107,10 @@ export class Panel extends St.Bin {
     )
 
     this.signals.connect(
+      this.taskbar, 'size-changed', this._updatePosition.bind(this)
+    )
+
+    this.signals.connect(
       this.taskbar, 'notify::width', this._updatePosition.bind(this)
     )
 
