@@ -1,4 +1,4 @@
-import { GLib, GObject, Graphene, Clutter, Meta, Shell, St } from '#gi'
+import { GLib, GObject, Graphene, Clutter, Mtk, Shell, St } from '#gi'
 import { appDisplay as AppDisplay } from '#ui'
 import { appFavorites as AppFavorites } from '#ui'
 import { dnd as DND } from '#ui'
@@ -318,7 +318,7 @@ class AppButton extends TaskBarItem {
     const [posX, posY] = this.get_transformed_position()
     const [boxW, boxH] = this.get_transformed_size()
 
-    const rect = new Meta.Rectangle({
+    const rect = new Mtk.Rectangle({
       x: posX + (boxW / 2),
       y: posY + (boxH / 2)
     })
