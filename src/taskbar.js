@@ -840,21 +840,44 @@ export class TaskBar extends St.BoxLayout {
     const appsSize = oldList.length + create.length - remove.length
 
     if (favsSize > 0 && favsSize < appsSize) {
-      if (!this.separator) {
-        this.separator = new TaskBarSeparator()
-        this.separator.setSize(this.iconSize)
-        this.separator.setVertical(this.vertical)
-
-        this.appsBox.add_child(this.separator)
-      }
-
-      this.appsBox.set_child_at_index(this.separator, favsSize)
+      this._addSeparator(favsSize)
     } else {
-      this.separator?.destroy()
-      this.separator = null
+      this._clearSeparator()
     }
 
     this.appsBox.queue_relayout()
+  }
+
+  _addSeparator(position) {
+    if (!this.separator) {
+      this.separator = new TaskBarSeparator()
+      this.separator.setSize(this.iconSize)
+      this.separator.setVertical(this.vertical)
+
+      this.appsBox.add_child(this.separator)
+    }
+
+    if (position != null) {
+      this.appsBox.set_child_at_index(this.separator, position)
+    }
+  }
+
+  _clearSeparator() {
+    this.separator?.destroy()
+    this.separator = null
+  }
+
+  _addDragPlaceholder(position) {
+    if (!this._dragPlaceholder) {
+      this._dragPlaceholder = new TaskBarPlaceHolder()
+      this._dragPlaceholder.setSize(this.iconSize)
+
+      this.appsBox.add_child(this._dragPlaceholder)
+    }
+
+    if (position != null) {
+      this.appsBox.set_child_at_index(this._dragPlaceholder, position)
+    }
   }
 
   _clearDragPlaceholder() {
@@ -862,6 +885,13 @@ export class TaskBar extends St.BoxLayout {
 
     this._dragPlaceholder = null
     this._placeholderPos  = null
+  }
+
+  _addEmptyDropTarget() {
+    if (this.appItems.length === 0 && !this._emptyDropTarget) {
+      this._emptyDropTarget = new TaskBarEmptyItem()
+      this.appsBox.insert_child_at_index(this._emptyDropTarget, 0)
+    }
   }
 
   _clearEmptyDropTarget() {
@@ -897,11 +927,7 @@ export class TaskBar extends St.BoxLayout {
     this._dragMonitor = { dragMotion: this._onItemDragMotion.bind(this) }
 
     DND.addDragMonitor(this._dragMonitor)
-
-    if (this.appItems.length === 0 && !this._emptyDropTarget) {
-      this._emptyDropTarget = new TaskBarEmptyItem()
-      this.appsBox.insert_child_at_index(this._emptyDropTarget, 0)
-    }
+    this._addEmptyDropTarget()
   }
 
   _onItemDragCancelled() {
@@ -971,14 +997,7 @@ export class TaskBar extends St.BoxLayout {
         return DND.DragMotionResult.CONTINUE
       }
 
-      if (!this._dragPlaceholder) {
-        this._dragPlaceholder = new TaskBarPlaceHolder()
-        this._dragPlaceholder.setSize(this.iconSize)
-
-        this.appsBox.add_child(this._dragPlaceholder)
-      }
-
-      this.appsBox.set_child_at_index(this._dragPlaceholder, this._placeholderPos)
+      this._addDragPlaceholder(this._placeholderPos)
     }
 
     if (!this._dragPlaceholder) {
