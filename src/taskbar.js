@@ -1,4 +1,4 @@
-import { GLib, GObject, Graphene, Clutter, Mtk, Shell, St } from '#gi'
+import { GLib, GObject, Graphene, Clutter, Meta, Mtk, Shell, St } from '#gi'
 import { appDisplay as AppDisplay } from '#ui'
 import { appFavorites as AppFavorites } from '#ui'
 import { dnd as DND } from '#ui'
@@ -169,6 +169,46 @@ class TaskBarItem extends St.Bin {
         this.hideLabel()
       }
     })
+  }
+}
+
+class TaskBarPlaceHolder extends TaskBarItem {
+  static {
+    GObject.registerClass(this)
+  }
+
+  constructor() {
+    super({
+      name: 'FlexiPlaceHolder'
+    })
+
+    const child = new St.Bin({
+      style_class: 'placeholder'
+    })
+
+    this.set_child(child)
+  }
+
+  setSize(size) {
+    this.child.set_size(size, size)
+  }
+}
+
+class TaskBarEmptyItem extends TaskBarItem {
+  static {
+    GObject.registerClass(this)
+  }
+
+  constructor() {
+    super({
+      name: 'FlexiEmptyItem'
+    })
+
+    const child = new St.Bin({
+      style_class: 'empty-dash-drop-target'
+    })
+
+    this.set_child(child)
   }
 }
 
@@ -430,14 +470,35 @@ class ShowAppsButton extends TaskBarItem {
     )
 
     this.button.set_child(this.icon)
+
+    this.button._delegate = this
     this.set_child(this.button)
 
-    this.setLabelText(_('Show Applications'))
     this.hookLabel(this.button)
+    this.setDragApp(null)
   }
 
   setIconSize(size) {
     this.icon.setSize(size)
+  }
+
+  setDragApp(app) {
+    const canRemove = this._canRemoveApp(app)
+    this.button.set_hover(canRemove)
+
+    if (canRemove) {
+      this.setLabelText(_('Unpin'))
+    } else {
+      this.setLabelText(_('Show Apps'))
+    }
+  }
+
+  _canRemoveApp(app) {
+    if (app == null || !global.settings.is_writable('favorite-apps')) {
+      return false
+    } else {
+      return AppFavorites.getAppFavorites().isFavorite(app.get_id())
+    }
   }
 
   _onClicked() {
@@ -446,6 +507,32 @@ class ShowAppsButton extends TaskBarItem {
     } else {
       Main.overview.showApps()
     }
+  }
+
+  handleDragOver(source, _actor, _x, _y, _time) {
+    if (!this._canRemoveApp(TaskBar.getAppFromSource(source))) {
+      return DND.DragMotionResult.NO_DROP
+    } else {
+      return DND.DragMotionResult.MOVE_DROP
+    }
+  }
+
+  acceptDrop(source, _actor, _x, _y, _time) {
+    const app = TaskBar.getAppFromSource(source)
+
+    if (!this._canRemoveApp(app)) {
+      return false
+    }
+
+    const appId  = app.get_id()
+    const laters = global.compositor.get_laters()
+
+    laters.add(Meta.LaterType.BEFORE_REDRAW, () => {
+      AppFavorites.getAppFavorites().removeFavorite(appId)
+      return false
+    })
+
+    return true
   }
 }
 
@@ -473,6 +560,7 @@ class AppsContainer extends St.ScrollView {
       St.PolicyType.EXTERNAL, St.PolicyType.EXTERNAL
     )
 
+    this.mainBox._delegate = this
     this.add_actor(this.mainBox)
   }
 
@@ -480,6 +568,10 @@ class AppsContainer extends St.ScrollView {
     return this.mainBox.get_children().filter(
       child => child instanceof AppButton
     )
+  }
+
+  setDelegate(actor) {
+    this._delegate = actor
   }
 
   setAlign(align, vertical) {
@@ -494,6 +586,10 @@ class AppsContainer extends St.ScrollView {
 export class TaskBar extends St.BoxLayout {
   static {
     GObject.registerClass({ Signals: { 'size-changed': {} } }, this)
+  }
+
+  static getAppFromSource(source) {
+    return source instanceof AppDisplay.AppIcon ? source.app : null
   }
 
   constructor() {
@@ -530,6 +626,18 @@ export class TaskBar extends St.BoxLayout {
       this.wmTracker, 'notify::focus-app', this._onFocusApp.bind(this)
     )
 
+    this.signals.connect(
+      Main.overview, 'item-drag-begin', this._onItemDragBegin.bind(this)
+    )
+
+    this.signals.connect(
+      Main.overview, 'item-drag-end', this._onItemDragEnd.bind(this)
+    )
+
+    this.signals.connect(
+      Main.overview, 'item-drag-cancelled', this._onItemDragCancelled.bind(this)
+    )
+
     this.setting.connect(
       'show-apps-position', this._onAppsAlignment.bind(this)
     )
@@ -547,6 +655,8 @@ export class TaskBar extends St.BoxLayout {
 
     this.appsList = new AppsContainer()
     this.add_child(this.appsList)
+
+    this.appsList.setDelegate(this)
 
     this.bind_property(
       'vertical', this.appsBox, 'vertical', GObject.BindingFlags.DEFAULT
@@ -745,5 +855,191 @@ export class TaskBar extends St.BoxLayout {
     }
 
     this.appsBox.queue_relayout()
+  }
+
+  _clearDragPlaceholder() {
+    this._dragPlaceholder?.destroy()
+
+    this._dragPlaceholder = null
+    this._placeholderPos  = null
+  }
+
+  _clearEmptyDropTarget() {
+    this._emptyDropTarget?.destroy()
+    this._emptyDropTarget = null
+  }
+
+  _onItemDragMotion(dragEvent) {
+    const app = TaskBar.getAppFromSource(dragEvent.source)
+
+    if (app == null || app.is_window_backed()) {
+      return DND.DragMotionResult.CONTINUE
+    }
+
+    const showHovered = this.showApps.contains(dragEvent.targetActor)
+    const appsHovered = this.appsBox.contains(dragEvent.targetActor)
+
+    if (!appsHovered || showHovered) {
+      this._clearDragPlaceholder()
+    }
+
+    if (showHovered) {
+      this.showApps.setDragApp(app)
+    } else {
+      this.showApps.setDragApp(null)
+    }
+
+    return DND.DragMotionResult.CONTINUE
+  }
+
+  _onItemDragBegin() {
+    this._dragAborted = false
+    this._dragMonitor = { dragMotion: this._onItemDragMotion.bind(this) }
+
+    DND.addDragMonitor(this._dragMonitor)
+
+    if (this.appItems.length === 0 && !this._emptyDropTarget) {
+      this._emptyDropTarget = new TaskBarEmptyItem()
+      this.appsBox.insert_child_at_index(this._emptyDropTarget, 0)
+    }
+  }
+
+  _onItemDragCancelled() {
+    this._dragAborted = true
+    this._endItemDrag()
+  }
+
+  _onItemDragEnd() {
+    if (!this._dragAborted) this._endItemDrag()
+  }
+
+  _endItemDrag() {
+    this._clearDragPlaceholder()
+    this._clearEmptyDropTarget()
+
+    this.showApps.setDragApp(null)
+    DND.removeDragMonitor(this._dragMonitor)
+  }
+
+  handleDragOver(source, actor, x, y, _time) {
+    if (!global.settings.is_writable('favorite-apps')) {
+      return DND.DragMotionResult.NO_DROP
+    }
+
+    const app = TaskBar.getAppFromSource(source)
+
+    if (app == null || app.is_window_backed()) {
+      return DND.DragMotionResult.NO_DROP
+    }
+
+    const favorites = AppFavorites.getAppFavorites().getFavorites()
+    const favsSize  = favorites.length
+    const favPos    = favorites.indexOf(app)
+    const childSize = this.appItems.length
+
+    let boxWidth  = this.appsBox.get_preferred_width(-1)[1]
+    let boxHeight = this.appsBox.get_preferred_height(-1)[1]
+    let position  = 0
+
+    if (this._dragPlaceholder) {
+      boxWidth  -= this._dragPlaceholder.width
+      boxHeight -= this._dragPlaceholder.height
+    }
+
+    if (this.separator) {
+      boxWidth  -= this.separator.width
+      boxHeight -= this.separator.height
+    }
+
+    if (!this._emptyDropTarget) {
+      if (this.get_vertical()) {
+        position = Math.floor(y * childSize / boxHeight)
+      } else {
+        position = Math.floor(x * childSize / boxWidth)
+      }
+    }
+
+    if (position > favsSize) {
+      position = favsSize
+    }
+
+    if (position !== this._placeholderPos) {
+      this._placeholderPos = position
+
+      if (favPos !== -1 && (position === favPos || position === favPos + 1)) {
+        this._clearDragPlaceholder()
+        return DND.DragMotionResult.CONTINUE
+      }
+
+      if (!this._dragPlaceholder) {
+        this._dragPlaceholder = new TaskBarPlaceHolder()
+        this._dragPlaceholder.setSize(this.iconSize)
+
+        this.appsBox.add_child(this._dragPlaceholder)
+      }
+
+      this.appsBox.set_child_at_index(this._dragPlaceholder, this._placeholderPos)
+    }
+
+    if (!this._dragPlaceholder) {
+      return DND.DragMotionResult.NO_DROP
+    }
+
+    if (favPos !== -1) {
+      return DND.DragMotionResult.MOVE_DROP
+    }
+
+    return DND.DragMotionResult.COPY_DROP
+  }
+
+  acceptDrop(source, _actor, _x, _y, _time) {
+    if (!global.settings.is_writable('favorite-apps')) {
+      return false
+    }
+
+    if (this._placeholderPos == null || this._placeholderPos < 0) {
+      return false
+    }
+
+    const app = TaskBar.getAppFromSource(source)
+
+    if (app == null || app.is_window_backed()) {
+      return false
+    }
+
+    const children = this.appsBox.get_children()
+    const appId    = app.get_id()
+    const appsMap  = AppFavorites.getAppFavorites().getFavoriteMap()
+
+    let position = 0
+
+    for (let i = 0; i < this._placeholderPos; i++) {
+      const child = children[i]
+      if (this._dragPlaceholder && child === this._dragPlaceholder) continue
+
+      const childId = child.app?.get_id()
+      if (childId !== appId && childId in appsMap) position++
+    }
+
+    if (!this._dragPlaceholder) {
+      return true
+    }
+
+    const laters = global.compositor.get_laters()
+
+    laters.add(Meta.LaterType.BEFORE_REDRAW, () => {
+      const favorites = AppFavorites.getAppFavorites()
+      this._clearDragPlaceholder()
+
+      if (appId in appsMap) {
+        favorites.moveFavoriteToPos(appId, position)
+      } else {
+        favorites.addFavoriteAtPos(appId, position)
+      }
+
+      return false
+    })
+
+    return true
   }
 }
