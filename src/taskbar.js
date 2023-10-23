@@ -247,10 +247,8 @@ class AppIcon extends AppDisplay.AppIcon {
     this.side = side
     this.alignIndicator(this.side)
 
-    if (this._menu) {
-      this._menu.destroy()
-      this._menu = null
-    }
+    this._menu?.destroy()
+    this._menu = null
   }
 
   alignIndicator(side = St.Side.BOTTOM) {
@@ -711,7 +709,7 @@ export class TaskBar extends St.BoxLayout {
     this.appItems.forEach(item => item.setSide(side))
     this._onIconAlignment()
 
-    this.separator && this.separator.setVertical(vertical)
+    this.separator?.setVertical(vertical)
   }
 
   createApp(app) {
@@ -746,13 +744,13 @@ export class TaskBar extends St.BoxLayout {
     this.showApps.setIconSize(this.iconSize)
     this.appItems.forEach(item => item.setIconSize(this.iconSize))
 
-    this.separator && this.separator.setSize(this.iconSize)
+    this.separator?.setSize(this.iconSize)
     this.emit('size-changed')
   }
 
   _onFocusApp() {
     const focused = this.wmTracker.focus_app
-    const focusId = focused && focused.get_id()
+    const focusId = focused?.get_id()
 
     this.appItems.forEach(item => {
       item.setActive(focusId == item.app.get_id())
@@ -851,8 +849,8 @@ export class TaskBar extends St.BoxLayout {
       }
 
       this.appsBox.set_child_at_index(this.separator, favsSize)
-    } else if (this.separator) {
-      this.separator.destroy()
+    } else {
+      this.separator?.destroy()
       this.separator = null
     }
 

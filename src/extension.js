@@ -21,19 +21,15 @@ export default class FlexiDock extends Extension {
   }
 
   disable() {
-    if (this.settings) {
-      this.settings.disconnectAll()
-      this.settings = null
-    }
+    this.settings?.disconnectAll()
+    this.settings = null
 
     this.removeDock()
   }
 
   removeDock() {
-    if (this.dock) {
-      this.dock.disable()
-      this.dock = null
-    }
+    this.dock?.disable()
+    this.dock = null
   }
 
   _onModeChange() {
