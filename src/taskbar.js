@@ -82,7 +82,9 @@ class TaskBarItem extends St.Bin {
 
     this.label.hide()
     Main.layoutManager.addChrome(this.label)
-    this.connect('destroy', () => this.label.destroy())
+
+    this.label.connect('destroy', () => this.label = null)
+    this.connect('destroy', () => this.label?.destroy())
 
     this.side = St.Side.BOTTOM
   }
