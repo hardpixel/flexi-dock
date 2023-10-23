@@ -42,11 +42,7 @@ export class Dock extends St.Bin {
     )
 
     this.signals.connect(
-      this.taskbar, 'notify::width', this._updateGeometry.bind(this)
-    )
-
-    this.signals.connect(
-      this.taskbar, 'notify::height', this._updateGeometry.bind(this)
+      this.taskbar, 'size-changed', this._updateGeometry.bind(this)
     )
 
     this.setting.connect(
