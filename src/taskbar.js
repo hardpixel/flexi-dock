@@ -543,6 +543,7 @@ class AppsContainer extends St.ScrollView {
 
   constructor() {
     super({
+      enable_mouse_scrolling: false,
       clip_to_allocation: true,
       x_expand: true,
       y_expand: true
@@ -556,12 +557,18 @@ class AppsContainer extends St.ScrollView {
       y_expand: true
     })
 
-    this.set_policy(
-      St.PolicyType.EXTERNAL, St.PolicyType.EXTERNAL
-    )
-
     this.mainBox._delegate = this
     this.add_actor(this.mainBox)
+
+    this.mainBox.connect(
+      'notify::vertical', this._onDirectionChange.bind(this)
+    )
+
+    this.connect(
+      'scroll-event', this._onScrollEvent.bind(this)
+    )
+
+    this._onDirectionChange()
   }
 
   get items() {
@@ -580,6 +587,54 @@ class AppsContainer extends St.ScrollView {
 
     this.x_align = vertical ? expand : custom
     this.y_align = vertical ? custom : expand
+  }
+
+  _onDirectionChange() {
+    const scroll = St.PolicyType.EXTERNAL
+    const hidden = St.PolicyType.NEVER
+
+    if (this.mainBox.vertical) {
+      this.set_policy(hidden, scroll)
+    } else {
+      this.set_policy(scroll, hidden)
+    }
+  }
+
+  _onScrollEvent(actor, event) {
+    if (event.is_pointer_emulated()) {
+      return Clutter.EVENT_STOP
+    }
+
+    let adjustment, delta = 0
+
+    if (this.mainBox.vertical) {
+      adjustment = this.get_vscroll_bar().get_adjustment()
+    } else {
+      adjustment = this.get_hscroll_bar().get_adjustment()
+    }
+
+    const increment = adjustment.step_increment
+
+    switch (event.get_scroll_direction()) {
+      case Clutter.ScrollDirection.UP:
+      case Clutter.ScrollDirection.LEFT:
+        delta = -increment
+        break
+      case Clutter.ScrollDirection.DOWN:
+      case Clutter.ScrollDirection.RIGHT:
+        delta = increment
+        break
+      case Clutter.ScrollDirection.SMOOTH:
+        const [dx, dy] = event.get_scroll_delta()
+        delta  = dy * increment
+        delta += dx * increment
+        break
+    }
+
+    const value = adjustment.get_value()
+    adjustment.set_value(value + delta)
+
+    return Clutter.EVENT_STOP
   }
 }
 
