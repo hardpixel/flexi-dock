@@ -901,6 +901,11 @@ export class TaskBar extends St.BoxLayout {
     }
 
     this.appsBox.queue_relayout()
+
+    if (!this._emittedRedisplayOnce) {
+      this._emittedRedisplayOnce = true
+      this.emit('size-changed')
+    }
   }
 
   _addSeparator(position) {
