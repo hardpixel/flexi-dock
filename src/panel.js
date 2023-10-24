@@ -1,5 +1,5 @@
 import { GObject, Clutter, St } from '#gi'
-import { InjectionManager } from '#extensions/extension';
+import { InjectionManager } from '#extensions/extension'
 import { main as Main } from '#ui'
 
 import { Signals, Settings } from '#me/handlers'

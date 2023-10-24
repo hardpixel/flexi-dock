@@ -1,5 +1,5 @@
 import { GObject, Gio, Gtk, Adw } from '#gi'
-import { ExtensionPreferences } from '#extensions/prefs';
+import { ExtensionPreferences } from '#extensions/prefs'
 import { setContext, useSettings } from '#me/context'
 
 class PreferencesPage extends Adw.PreferencesPage {
