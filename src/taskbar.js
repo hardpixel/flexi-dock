@@ -232,6 +232,10 @@ class AppIcon extends AppDisplay.AppIcon {
     super.popupMenu(this.side)
   }
 
+  getDragActor() {
+    return this.app.create_icon_texture(this.icon.iconSize)
+  }
+
   handleDragOver() {
     return DND.DragMotionResult.CONTINUE
   }
