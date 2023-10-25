@@ -251,8 +251,7 @@ class AppIcon extends AppDisplay.AppIcon {
     this.side = side
     this.alignIndicator(this.side)
 
-    this._menu?.destroy()
-    this._menu = null
+    this._removeMenu()
   }
 
   alignIndicator(side = St.Side.BOTTOM) {
@@ -263,10 +262,15 @@ class AppIcon extends AppDisplay.AppIcon {
     this._dot.y_align = Clutter.ActorAlign[yAlign[side]]
   }
 
-  _onDestroy() {
+  _removeMenu() {
     this._menu?.setApp(null)
-    this._menu = null
+    this._menu?.destroy()
 
+    this._menu = null
+  }
+
+  _onDestroy() {
+    this._removeMenu()
     super._onDestroy()
   }
 }
