@@ -258,6 +258,13 @@ class AppIcon extends AppDisplay.AppIcon {
     this._dot.x_align = Clutter.ActorAlign[xAlign[side]]
     this._dot.y_align = Clutter.ActorAlign[yAlign[side]]
   }
+
+  _onDestroy() {
+    this._menu?.setApp(null)
+    this._menu = null
+
+    super._onDestroy()
+  }
 }
 
 class AppButton extends TaskBarItem {
