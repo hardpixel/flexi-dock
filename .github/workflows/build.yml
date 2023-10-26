@@ -30,8 +30,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Install Yarn
-        run: npm install -g yarn
+      - name: Enable corepack
+        run: corepack enable
 
       - name: Install dependencies
         run: yarn install
