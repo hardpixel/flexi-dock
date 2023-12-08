@@ -1,9 +1,9 @@
-import { GLib, GObject, Graphene, Clutter, Meta, Mtk, Shell, St } from '#gi'
+import { GObject, Graphene, Clutter, Meta, Mtk, Shell, St } from '#gi'
 import { appDisplay as AppDisplay } from '#ui'
 import { appFavorites as AppFavorites } from '#ui'
 import { dnd as DND } from '#ui'
 import { main as Main } from '#ui'
-import { Signals, Settings } from '#me/handlers'
+import { Signals, Settings, Timeouts } from '#me/handlers'
 
 class TaskBarIcon extends St.Bin {
   static {
@@ -289,6 +289,7 @@ class AppButton extends TaskBarItem {
     })
 
     this.signals = new Signals()
+    this.timeout = new Timeouts()
     this.appIcon = new AppIcon(app)
 
     this.signals.connect(
@@ -435,11 +436,8 @@ class AppButton extends TaskBarItem {
         break
     }
 
-    if (direction && !this._scrollDeadTimeId) {
-      this._scrollDeadTimeId = GLib.timeout_add(
-        GLib.PRIORITY_DEFAULT, 300, () => this._scrollDeadTimeId = 0
-      )
-
+    if (direction && !this._scrollTimeId) {
+      this._scrollTimeId = this.timeout.add(300, () => this._scrollTimeId = 0)
       this.cycleWindows(direction)
     }
 
@@ -455,6 +453,7 @@ class AppButton extends TaskBarItem {
   }
 
   _onDestroy() {
+    this.timeout.removeAll()
     this.signals.disconnectAll()
   }
 }

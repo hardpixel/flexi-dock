@@ -1,3 +1,4 @@
+import { GLib } from '#gi'
 import { useSettings } from '#me/context'
 
 export class Signals {
@@ -55,6 +56,57 @@ export class Settings {
 
   disconnectAll() {
     this.store.forEach(id => this.proxy.disconnect(id))
+    this.store.clear()
+  }
+}
+
+export class Timeouts {
+  constructor() {
+    this.store = new Set()
+  }
+
+  idle(callback) {
+    const id = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+      callback.call(null)
+      return GLib.SOURCE_REMOVE
+    })
+
+    this.store.add(id)
+    return id
+  }
+
+  add(time, callback) {
+    const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, time, () => {
+      callback.call(null)
+      return GLib.SOURCE_REMOVE
+    })
+
+    this.store.add(id)
+    return id
+  }
+
+  interval(time, callback) {
+    const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, time, () => {
+      if (callback.call(null) === false) {
+        return GLib.SOURCE_REMOVE
+      } else {
+        return GLib.SOURCE_CONTINUE
+      }
+    })
+
+    this.store.add(id)
+    return id
+  }
+
+  remove(id) {
+    if (this.store.has(id)) {
+      GLib.source_remove(id)
+      this.store.delete(id)
+    }
+  }
+
+  removeAll() {
+    this.store.forEach(id => GLib.source_remove(id))
     this.store.clear()
   }
 }
