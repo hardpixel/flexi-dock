@@ -1,8 +1,7 @@
 import { GObject, Clutter, St } from '#gi'
-import { InjectionManager } from '#extensions/extension'
 import { main as Main } from '#ui'
 
-import { Signals, Settings } from '#me/handlers'
+import { Signals, Settings, Injections } from '#me/handlers'
 import { TaskBar } from '#me/taskbar'
 
 class PanelBox extends St.BoxLayout {
@@ -100,7 +99,7 @@ export class Panel extends St.Bin {
     this.taskbar = new TaskBar()
     this.signals = new Signals()
     this.setting = new Settings()
-    this.injects = new InjectionManager()
+    this.injects = new Injections()
 
     this.signals.connect(
       Main.layoutManager, 'monitors-changed', this._updatePosition.bind(this)
@@ -149,7 +148,7 @@ export class Panel extends St.Bin {
 
     this.setting.disconnectAll()
     this.signals.disconnectAll()
-    this.injects.clear()
+    this.injects.restoreAll()
 
     Main.panel.statusArea.activities.show()
 
@@ -198,10 +197,8 @@ export class Panel extends St.Bin {
   }
 
   _injectAllocate() {
-    const proto = Object.getPrototypeOf(Main.panel)
-
-    this.injects.overrideMethod(proto, 'vfunc_allocate', () => {
-      return box => this._doPanelAllocate(Main.panel, box)
+    this.injects.override(Main.panel, 'vfunc_allocate', box => {
+      this._doPanelAllocate(Main.panel, box)
     })
   }
 

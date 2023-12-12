@@ -1,4 +1,6 @@
 import { GLib } from '#gi'
+import { InjectionManager } from '#extensions/extension'
+
 import { useSettings } from '#me/context'
 
 export class Signals {
@@ -57,6 +59,36 @@ export class Settings {
   disconnectAll() {
     this.store.forEach(id => this.proxy.disconnect(id))
     this.store.clear()
+  }
+}
+
+export class Injections {
+  constructor() {
+    this.proxy = new InjectionManager()
+  }
+
+  override(object, method, callback) {
+    if (method.startsWith('vfunc_')) {
+      const proto = Object.getPrototypeOf(object)
+      this.proxy.overrideMethod(proto, method, () => callback)
+    } else {
+      const proto = object.prototype
+      this.proxy.overrideMethod(proto, method, () => callback)
+    }
+  }
+
+  restore(object, method) {
+    if (method.startsWith('vfunc_')) {
+      const proto = Object.getPrototypeOf(object)
+      this.proxy.restoreMethod(proto, method)
+    } else {
+      const proto = object.prototype
+      this.proxy.restoreMethod(proto, method)
+    }
+  }
+
+  restoreAll() {
+    this.proxy.clear()
   }
 }
 
