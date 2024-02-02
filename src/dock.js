@@ -34,11 +34,11 @@ export class Dock extends St.Bin {
     )
 
     this.signals.connect(
-      Main.overview, 'showing', this._syncVisible.bind(this)
+      Main.overview, 'showing', this._onOverviewShow.bind(this)
     )
 
     this.signals.connect(
-      Main.overview, 'hiding', this._syncVisible.bind(this)
+      Main.overview, 'hiding', this._onOverviewHide.bind(this)
     )
 
     this.signals.connect(
@@ -81,6 +81,16 @@ export class Dock extends St.Bin {
     this.signals.disconnectAll()
 
     this.destroy()
+  }
+
+  _onOverviewShow() {
+    this.dockbar.add_style_pseudo_class('overview')
+    this._syncVisible()
+  }
+
+  _onOverviewHide() {
+    this.dockbar.remove_style_pseudo_class('overview')
+    this._syncVisible()
   }
 
   _updateGeometry() {
