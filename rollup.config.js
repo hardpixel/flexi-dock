@@ -8,6 +8,7 @@ import zip from 'rollup-plugin-zipdir'
 export default {
   input: [
     'src/context.js',
+    'src/handlers.js',
     'src/metadata.json',
     'src/stylesheet.scss'
   ],
