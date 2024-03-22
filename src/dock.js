@@ -16,6 +16,8 @@ export class Dock extends St.Bin {
 
     this.dockbar = new St.Bin({
       style_class: 'flexi-dock',
+      x_expand: true,
+      y_expand: true,
       track_hover: true,
       reactive: true,
       can_focus: true

@@ -27,6 +27,34 @@
   .dash-separator {
     margin: 0 !important;
   }
+
+  .overview-tile {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    .overview-icon {
+      background-color: transparent !important;
+      padding: 8px !important;
+    }
+
+    &:focus, &:hover {
+      .overview-icon {
+        background-color: rgba(100, 100, 100, 0.35) !important;
+      }
+    }
+
+    &:active, &:checked {
+      .overview-icon {
+        background-color: rgba(100, 100, 100, 0.45) !important;
+      }
+    }
+  }
+
+  .app-grid-running-dot {
+    margin: 0 !important;
+  }
 }
 
 .flexi-dock {
@@ -39,12 +67,20 @@
     .show-apps, .app-well-app {
       padding: 0 8px !important;
     }
+
+    .overview-tile {
+      padding: 0 8px !important;
+    }
   }
 
   &.top, &.bottom {
     padding: 0 8px;
 
     .show-apps, .app-well-app {
+      padding: 8px 0 !important;
+    }
+
+    .overview-tile {
       padding: 8px 0 !important;
     }
   }

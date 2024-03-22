@@ -260,6 +260,9 @@ class AppIcon extends AppDisplay.AppIcon {
 
     this._dot.x_align = Clutter.ActorAlign[xAlign[side]]
     this._dot.y_align = Clutter.ActorAlign[yAlign[side]]
+
+    this._dot.translationX = 0
+    this._dot.translationY = 0
   }
 
   _removeMenu() {
@@ -483,6 +486,10 @@ class ShowAppsButton extends TaskBarItem {
       'clicked', this._onClicked.bind(this)
     )
 
+    if (!this.button.add_actor) {
+      this.button.add_style_class_name('overview-tile')
+    }
+
     this.button.set_child(this.icon)
 
     this.button._delegate = this
@@ -572,7 +579,12 @@ class AppsContainer extends St.ScrollView {
     })
 
     this.mainBox._delegate = this
-    this.add_actor(this.mainBox)
+
+    if (this.add_actor) {
+      this.add_actor(this.mainBox)
+    } else {
+      this.add_child(this.mainBox)
+    }
 
     this.mainBox.connect(
       'notify::vertical', this._onDirectionChange.bind(this)
@@ -663,7 +675,9 @@ export class TaskBar extends St.BoxLayout {
 
   constructor() {
     super({
-      style_class: 'flexi-taskbar'
+      style_class: 'flexi-taskbar',
+      x_expand: true,
+      y_expand: true
     })
 
     this.fixedSide = 'bottom'
