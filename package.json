@@ -1,6 +1,6 @@
 {
   "name": "flexi-dock",
-  "version": "1",
+  "version": "2",
   "description": "GNOME Shell dock extension",
   "repository": "https://github.com/hardpixel/flexi-dock",
   "author": "Jonian Guveli",
