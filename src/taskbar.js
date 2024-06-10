@@ -265,6 +265,11 @@ class AppIcon extends AppDisplay.AppIcon {
     this._dot.translationY = 0
   }
 
+  _updateDotStyle() {
+    this._dot.translationX = 0
+    this._dot.translationY = 0
+  }
+
   _removeMenu() {
     this._menu?.setApp(null)
     this._menu?.destroy()
