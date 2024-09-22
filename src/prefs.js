@@ -14,81 +14,69 @@ class PreferencesPage extends Adw.PreferencesPage {
 
     this.settings = useSettings()
 
-    this.addSection({
-      title: 'General',
-      actions: [
-        {
-          title: 'Mode',
-          type: 'enum',
-          subtitle: 'Select operation mode',
-          setting: 'mode',
-          options: ['Dock', 'Panel']
-        },
-        {
-          title: 'Apps Button',
-          type: 'enum',
-          subtitle: 'Set apps button position',
-          setting: 'show-apps-position',
-          options: ['Start', 'End']
-        }
-      ]
-    })
+    this.addSection(null, [
+      {
+        title: 'Mode',
+        subtitle: 'Select operation mode',
+        setting: 'mode',
+        type: 'enum',
+        options: ['Dock', 'Panel']
+      },
+      {
+        title: 'Apps Button',
+        subtitle: 'Set apps button position',
+        setting: 'show-apps-position',
+        type: 'enum',
+        options: ['Start', 'End']
+      }
+    ])
 
-    this.addSection({
-      title: 'Icons',
-      actions: [
-        {
-          title: 'Size',
-          type: 'int',
-          subtitle: 'Set taskbar icons size',
-          setting: 'icon-size',
-          options: { lower: 16, upper: 128 }
-        },
-        {
-          title: 'Alignment',
-          type: 'enum',
-          subtitle: 'Set taskbar icons alignment',
-          setting: 'icon-alignment',
-          options: ['Start', 'End', 'Center']
-        }
-      ]
-    })
+    this.addSection('Icons', [
+      {
+        title: 'Size',
+        subtitle: 'Set taskbar icons size',
+        setting: 'icon-size',
+        type: 'int',
+        options: { lower: 16, upper: 128 }
+      },
+      {
+        title: 'Alignment',
+        subtitle: 'Set taskbar icons alignment',
+        setting: 'icon-alignment',
+        type: 'enum',
+        options: ['Start', 'End', 'Center']
+      }
+    ])
 
-    this.addSection({
-      title: 'Dock',
-      actions: [
-        {
-          title: 'Position',
-          type: 'enum',
-          subtitle: 'Set dock position',
-          setting: 'dock-position',
-          options: ['Left', 'Right', 'Top', 'Bottom']
-        },
-        {
-          title: 'Alignment',
-          type: 'enum',
-          subtitle: 'Set dock alignment',
-          setting: 'dock-alignment',
-          options: ['Fill', 'Start', 'End', 'Center']
-        }
-      ]
-    })
+    this.addSection('Dock', [
+      {
+        title: 'Position',
+        subtitle: 'Set dock position',
+        setting: 'dock-position',
+        type: 'enum',
+        options: ['Left', 'Right', 'Top', 'Bottom']
+      },
+      {
+        title: 'Alignment',
+        subtitle: 'Set dock alignment',
+        setting: 'dock-alignment',
+        type: 'enum',
+        options: ['Fill', 'Start', 'End', 'Center']
+      }
+    ])
 
-    this.addSection({
-      title: 'Panel',
-      actions: [
-        {
-          title: 'Position',
-          type: 'enum',
-          subtitle: 'Set panel position',
-          setting: 'panel-position',
-          options: ['Top', 'Bottom']
-        }
-      ]
-    })
+    this.addSection('Panel', [
+      {
+        title: 'Position',
+        subtitle: 'Set panel position',
+        setting: 'panel-position',
+        type: 'enum',
+        options: ['Top', 'Bottom']
+      }
+    ])
   }
 
-  addSection({ title, actions }) {
+  addSection(title, actions) {
     const group = new Adw.PreferencesGroup({ title })
     this.add(group)
 
