@@ -640,7 +640,7 @@ class AppsContainer extends St.ScrollView {
     const scroll = St.PolicyType.EXTERNAL
     const hidden = St.PolicyType.NEVER
 
-    if (this.mainBox.vertical) {
+    if (this.mainBox.get_vertical()) {
       this.set_policy(hidden, scroll)
     } else {
       this.set_policy(scroll, hidden)
@@ -654,7 +654,7 @@ class AppsContainer extends St.ScrollView {
 
     let adjustment, delta = 0
 
-    if (this.mainBox.vertical) {
+    if (this.mainBox.get_vertical()) {
       adjustment = this.getVscrollAdjustment()
     } else {
       adjustment = this.getHscrollAdjustment()
@@ -841,7 +841,7 @@ export class TaskBar extends St.BoxLayout {
   }
 
   _onIconAlignment() {
-    this.appsList.setAlign(this.iconAlign, this.vertical)
+    this.appsList.setAlign(this.iconAlign, this.get_vertical())
   }
 
   _onIconSize() {
@@ -961,7 +961,7 @@ export class TaskBar extends St.BoxLayout {
     if (!this.separator) {
       this.separator = new TaskBarSeparator()
       this.separator.setSize(this.iconSize)
-      this.separator.setVertical(this.vertical)
+      this.separator.setVertical(this.get_vertical())
 
       this.appsBox.add_child(this.separator)
     }
