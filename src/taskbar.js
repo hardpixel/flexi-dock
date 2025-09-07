@@ -620,6 +620,22 @@ class AppsContainer extends St.ScrollView {
     this.y_align = vertical ? custom : expand
   }
 
+  getHscrollAdjustment() {
+    if (this.get_hadjustment) {
+      return this.get_hadjustment()
+    } else {
+      return this.get_hscroll_bar().get_adjustment()
+    }
+  }
+
+  getVscrollAdjustment() {
+    if (this.get_vadjustment) {
+      return this.get_vadjustment()
+    } else {
+      return this.get_vscroll_bar().get_adjustment()
+    }
+  }
+
   _onDirectionChange() {
     const scroll = St.PolicyType.EXTERNAL
     const hidden = St.PolicyType.NEVER
@@ -639,9 +655,9 @@ class AppsContainer extends St.ScrollView {
     let adjustment, delta = 0
 
     if (this.mainBox.vertical) {
-      adjustment = this.get_vscroll_bar().get_adjustment()
+      adjustment = this.getVscrollAdjustment()
     } else {
-      adjustment = this.get_hscroll_bar().get_adjustment()
+      adjustment = this.getHscrollAdjustment()
     }
 
     const increment = adjustment.step_increment
