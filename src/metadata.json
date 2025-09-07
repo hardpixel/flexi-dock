@@ -1,5 +1,5 @@
 {
-  "shell-version": ["45", "46", "47", "48"],
+  "shell-version": ["45", "46", "47", "48", "49"],
   "uuid": "flexi-dock@hardpixel.eu",
   "url": "https://github.com/hardpixel/flexi-dock",
   "settings-schema": "org.gnome.shell.extensions.flexi-dock",
